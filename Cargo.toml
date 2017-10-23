@@ -1,0 +1,8 @@
+[package]
+name = "roma"
+version = "0.1.0"
+authors = ["Tom Barrett <tombarrett@siu.edu>"]
+
+[dependencies]
+pancurses = "0.11"
+rand = "0.3"
