@@ -12,7 +12,7 @@ pub struct View{
 
 impl View{
     pub fn new((x,y) : (i32, i32), map_window : &pancurses::Window) -> View {
-        let window = map_window.derwin(x,y,0,0).expect("help");
+        let window = map_window.derwin(x,y,0,0).expect("Cannot create derwin.");
         View{
             width : 	    x,
             height : 	    y,
@@ -22,40 +22,38 @@ impl View{
         }
     }
 
-    pub fn center(&mut self, character : Character, (hh, ww) : (i32,i32)) {
-        let mut rr = self.row;
-        let mut cc = self.col;
+    pub fn center(&mut self, character : Character, map_window : &pancurses::Window) {
         let r = character.location.x - self.height/2;
         let c = character.location.y - self.width/2;
+
+        let (hh, ww) = map_window.get_max_yx();
         
         if c + self.width >= ww {
             let delta = ww - (c + self.width);
-            cc = c + delta;
+            self.col = c + delta;
         }
         else {
-            cc = c;
+            self.col = c;
         }
 
         if r + self.height >= hh {
             let delta = hh - (r + self.height);
-            rr = r + delta;
+            self.row = r + delta;
         }
         else {
-            rr = r;
+            self.row = r;
         }
 
         if r < 0 {
-            rr = 0;
+            self.row = 0;
         }
 
         if c < 0 {
-            cc = 0;
+            self.col = 0;
         }
         
-        self.window.refresh();
-        self.window.mv(rr, cc);
-        self.row = rr;
-        self.col = cc;
+        self.window.mvderwin(self.row, self.col);
+        map_window.touch();
         self.window.refresh();
     }
 }

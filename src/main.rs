@@ -31,30 +31,37 @@ fn init() -> pancurses::Window {
 fn main() {
 
     let main = init();
-
     let mut map = Map::new();
     let mut view = View::new(main.get_max_yx(), &map.window);
-    let cursor = Character::new('X', 3, Location{x:150,y:150});
 
-    map.fill();
+    let mut cursor = Character::new('X', 3, Location{x:150,y:150});
+
     let list = List::new(map.impassable.to_vec());
-    list.draw(&map.window);
-    cursor.draw(&map.window);
 
     let paused = false;
     loop{
         match main.getch() {
-            Some(Input::Character(c)) => break,
+            Some(Input::Character(c)) => {
+                match c {
+                    'h' => cursor.location.y -= 1,
+                    'l' => cursor.location.y += 1,
+                    'k' => cursor.location.x -= 1,
+                    'j' => cursor.location.x += 1,
+                    'q' => break,
+                    _ => (),
+                }
+            },
             _ => ()
         }
 
         if !paused {
             list.action();
         }
+
         map.fill();
         list.draw(&map.window);
         cursor.draw(&map.window);
-        view.center(cursor, map.window.get_max_yx());
+        view.center(cursor, &map.window);
     }
 
 	endwin();
