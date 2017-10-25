@@ -23,8 +23,8 @@ impl View{
     }
 
     pub fn center(&mut self, character : Character, map_window : &pancurses::Window) {
-        let r = character.location.x - self.height/2;
-        let c = character.location.y - self.width/2;
+        let c = character.location.x - self.width/2;
+        let r = character.location.y - self.height/2;
 
         let (hh, ww) = map_window.get_max_yx();
         
@@ -52,7 +52,7 @@ impl View{
             self.col = 0;
         }
         
-        self.window.mvderwin(self.row, self.col);
+        self.window.mvderwin(self.col, self.row);
         map_window.touch();
         self.window.refresh();
     }
