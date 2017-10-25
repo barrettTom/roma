@@ -36,9 +36,8 @@ fn main() {
 
     let mut cursor = Character::new('X', 3, Location{x:150,y:150});
 
-    let list = List::new(map.impassable.to_vec());
+    let mut list = List::new(map.impassable.to_vec());
 
-    let paused = false;
     loop{
         match main.getch() {
             Some(Input::Character(c)) => {
@@ -54,13 +53,15 @@ fn main() {
             _ => ()
         }
 
-        if !paused {
-            list.action();
-        }
+        list.action();
 
         map.fill();
-        list.draw(&map.window);
-        cursor.draw(&map.window);
+
+        for man in list.men.iter(){
+            map.draw(man);
+        }
+        map.draw(&cursor);
+
         view.center(cursor, &map.window);
     }
 

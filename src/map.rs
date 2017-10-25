@@ -5,6 +5,7 @@ use std::io::prelude::*;
 extern crate pancurses;
 use pancurses::{newwin, ColorPair};
 
+use character::Character;
 use location::Location;
 
 pub struct Map{
@@ -15,8 +16,8 @@ pub struct Map{
     pub impassable :Vec<Location>,
 }
 
-impl Map{
-    pub fn new() -> Map{
+impl Map {
+    pub fn new() -> Map {
         let file = File::open("data/map.txt").expect("Cant open map file !");
         let reader = BufReader::new(file);
 
@@ -48,13 +49,18 @@ impl Map{
             impassable.push(Location{x : x as i32, y : height-1 as i32});
         }
 
-        Map{
+        Map {
             height : 	    height,
             width : 	    width,
             window:		    newwin(height, width, 0, 0),
             map_data:	    map_data,
             impassable:     impassable,
         }
+    }
+
+    pub fn draw(&self, character : &Character) {
+        self.window.attron(ColorPair(character.color));
+        self.window.mvaddch(character.location.x, character.location.y, character.symbol);
     }
 
     pub fn fill(&mut self) {
