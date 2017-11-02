@@ -1,7 +1,8 @@
 extern crate pancurses;
 
-use character::Character;
 use location::Location;
+use character::Character;
+use constants::Colors;
 
 pub struct List{
     pub men                 : Vec<Character>,
@@ -12,9 +13,7 @@ impl List {
     pub fn new(impassable_locations : Vec<Location>) -> List {
         let mut men = Vec::new();
         for i in 0..3 {
-            let l = Location{x:150,y:150+i};
-            let c = Character::new('@',4,l);
-            men.push(c);
+            men.push(Character::new('@', Colors::BlueUnit as u8, Location{ x : 150, y : 150+i }));
         }
         List {
             men                     : men,
@@ -24,22 +23,14 @@ impl List {
 
     pub fn action(&mut self) {
         for i in 0..self.men.len() {
-            let tmp = self.men[i].location.clone();
-            let free_locations = self.get_free_locations(tmp);
+            let location = self.men[i].location.clone();
+            let free_locations = self.get_free_locations(location);
             self.men[i].action(free_locations);
         }
     }
 
     fn get_free_locations(&mut self, location : Location) -> Vec<Location> {
-        let mut potential_locations = Vec::new();
-        potential_locations.push(location.up());
-        potential_locations.push(location.upleft());
-        potential_locations.push(location.upright());
-        potential_locations.push(location.down());
-        potential_locations.push(location.downleft());
-        potential_locations.push(location.downright());
-        potential_locations.push(location.left());
-        potential_locations.push(location.right());
+        let mut potential_locations = location.get_around();
 
         potential_locations.retain(|potential_location| {
             let mut keep = true;

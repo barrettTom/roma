@@ -5,8 +5,9 @@ use std::io::prelude::*;
 extern crate pancurses;
 use pancurses::{newwin, ColorPair};
 
-use character::Character;
 use location::Location;
+use character::Character;
+use constants::Colors;
 
 pub struct Map {
     pub height      : i32,
@@ -33,20 +34,20 @@ impl Map {
         for (i, row) in map_data.iter().enumerate() {
             for (j, index) in row.chars().enumerate() {
                 match index {
-                    '0' | 'O' => impassable.push(Location{x : i as i32, y : j as i32}),
+                    '0' | 'O' => impassable.push(Location{ x : i as i32, y : j as i32 }),
                     _ => (),
                 }
             }
         }
 
         for y in 0..height {
-            impassable.push(Location{x : 0 as i32, y : y as i32});
-            impassable.push(Location{x : width-1 as i32, y : y as i32});
+            impassable.push(Location{ x : 0 as i32, y : y as i32 });
+            impassable.push(Location{ x : width-1 as i32, y : y as i32} );
         }
 
         for x in 0..width {
-            impassable.push(Location{x : x as i32, y : 0 as i32});
-            impassable.push(Location{x : x as i32, y : height-1 as i32});
+            impassable.push(Location{ x : x as i32, y : 0 as i32 });
+            impassable.push(Location{ x : x as i32, y : height-1 as i32 });
         }
 
         Map {
@@ -68,18 +69,18 @@ impl Map {
             for (j, index) in row.chars().enumerate() {
                 match index {
                     '0' | 'O' => {
-                        self.window.attron(ColorPair(2));
+                        self.window.attron(ColorPair(Colors::Tree as u8));
                         self.window.mvaddch(i as i32, j as i32, index);
                     }
                     _ => {
-                        self.window.attron(ColorPair(1));
+                        self.window.attron(ColorPair(Colors::Grass as u8));
                         self.window.mvaddch(i as i32, j as i32, index);
                     }
                 }
             }
         }
 
-        self.window.attron(ColorPair(3));
+        self.window.attron(ColorPair(Colors::White as u8));
         for y in 0..self.height {
             self.window.mvaddch(y, 0, '-');
             self.window.mvaddch(y, self.width-1, '-');

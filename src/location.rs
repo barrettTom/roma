@@ -24,28 +24,17 @@ impl cmp::PartialEq for Location {
 }
 
 impl Location {
-    pub fn up(self) -> Location {
-        Location{ x : self.x, y : self.y + 1 }
-    }
-    pub fn upleft(self) -> Location {
-        Location{ x : self.x - 1, y : self.y + 1 }
-    }
-    pub fn upright(self) -> Location {
-        Location{ x : self.x + 1, y : self.y + 1 }
-    }
-    pub fn down(self) -> Location {
-        Location{ x : self.x, y : self.y - 1 }
-    }
-    pub fn downleft(self) -> Location {
-        Location{ x : self.x - 1, y : self.y - 1 }
-    }
-    pub fn downright(self) -> Location {
-        Location{ x : self.x + 1, y : self.y - 1 }
-    }
-    pub fn right(self) -> Location {
-        Location{ x : self.x + 1, y : self.y }
-    }
-    pub fn left(self) -> Location {
-        Location{ x : self.x - 1, y : self.y }
+    pub fn get_around(self) -> Vec<Location> {
+        let mut around = Vec::new();
+        around.push(Location { x : self.x, y : self.y });
+        around.push(Location { x : self.x+1, y : self.y });
+        around.push(Location { x : self.x-1, y : self.y });
+        around.push(Location { x : self.x, y : self.y+1 });
+        around.push(Location { x : self.x, y : self.y-1 });
+        around.push(Location { x : self.x+1, y : self.y+1 });
+        around.push(Location { x : self.x-1, y : self.y-1 });
+        around.push(Location { x : self.x+1, y : self.y-1 });
+        around.push(Location { x : self.x-1, y : self.y+1 });
+        around
     }
 }

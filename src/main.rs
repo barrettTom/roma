@@ -4,14 +4,16 @@ use pancurses::{initscr, endwin, noecho, start_color, Input, init_pair, COLOR_YE
 mod map;
 mod view;
 mod list;
-mod character;
 mod location;
+mod character;
+mod constants;
 
 use map::Map;
 use view::View;
 use list::List;
-use character::Character;
 use location::Location;
+use character::Character;
+use constants::Colors;
 
 fn init() -> pancurses::Window {
     let main = initscr();
@@ -21,10 +23,10 @@ fn init() -> pancurses::Window {
     curs_set(0);
     main.timeout(100);
     start_color();
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(3, COLOR_WHITE, COLOR_WHITE);
-    init_pair(4, COLOR_WHITE, COLOR_BLUE);
+    init_pair(Colors::Grass as i16, COLOR_GREEN, COLOR_BLACK);
+    init_pair(Colors::Tree as i16, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(Colors::White as i16, COLOR_WHITE, COLOR_WHITE);
+    init_pair(Colors::BlueUnit as i16, COLOR_WHITE, COLOR_BLUE);
     main
 }
 
@@ -34,7 +36,7 @@ fn main() {
     let mut map = Map::new();
     let mut view = View::new(main.get_max_yx(), &map.window);
 
-    let mut cursor = Character::new('X', 3, Location{x:150,y:150});
+    let mut cursor = Character::new('X', Colors::White as u8, Location{ x : 150, y : 150});
 
     let mut list = List::new(map.impassable.to_vec());
 
