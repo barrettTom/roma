@@ -57,7 +57,7 @@ fn main() {
 
         map.fill();
 
-        for man in list.men.iter(){
+        for man in list.men.iter() {
             map.draw(man);
         }
         map.draw(&cursor);

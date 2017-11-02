@@ -8,12 +8,12 @@ use pancurses::{newwin, ColorPair};
 use character::Character;
 use location::Location;
 
-pub struct Map{
-    pub height :    i32,
-    pub width :     i32,
-	pub window :	pancurses::Window,
-	map_data :      Vec<String>,
-    pub impassable :Vec<Location>,
+pub struct Map {
+    pub height      : i32,
+    pub width       : i32,
+	pub window      : pancurses::Window,
+	map_data        : Vec<String>,
+    pub impassable  : Vec<Location>,
 }
 
 impl Map {
@@ -22,7 +22,7 @@ impl Map {
         let reader = BufReader::new(file);
 
         let mut map_data = Vec::new();
-        for line in reader.lines(){
+        for line in reader.lines() {
             map_data.push(line.unwrap());
         }
 
@@ -50,11 +50,11 @@ impl Map {
         }
 
         Map {
-            height : 	    height,
-            width : 	    width,
-            window:		    newwin(height, width, 0, 0),
-            map_data:	    map_data,
-            impassable:     impassable,
+            height      : height,
+            width       : width,
+            window      : newwin(height, width, 0, 0),
+            map_data    : map_data,
+            impassable  : impassable,
         }
     }
 

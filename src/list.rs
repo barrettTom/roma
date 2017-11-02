@@ -4,8 +4,8 @@ use character::Character;
 use location::Location;
 
 pub struct List{
-    pub men : Vec<Character>,
-    impassable_locations : Vec<Location>,
+    pub men                 : Vec<Character>,
+    impassable_locations    : Vec<Location>,
 }
 
 impl List {
@@ -17,8 +17,8 @@ impl List {
             men.push(c);
         }
         List {
-            men : men,
-            impassable_locations : impassable_locations,
+            men                     : men,
+            impassable_locations    : impassable_locations,
         }
     }
 
@@ -33,30 +33,28 @@ impl List {
     fn get_free_locations(&mut self, location : Location) -> Vec<Location> {
         let mut potential_locations = Vec::new();
         potential_locations.push(location.up());
+        potential_locations.push(location.upleft());
+        potential_locations.push(location.upright());
         potential_locations.push(location.down());
+        potential_locations.push(location.downleft());
+        potential_locations.push(location.downright());
         potential_locations.push(location.left());
         potential_locations.push(location.right());
 
-        let mut indexes = Vec::new();
-        for man in self.men.iter() {
-            for (index, potential_location) in potential_locations.iter().enumerate() {
+        potential_locations.retain(|potential_location| {
+            let mut keep = true;
+            for man in self.men.iter() {
                 if potential_location == &man.location {
-                    indexes.push(index);
+                    keep = false;
                 }
             }
-        }
-        
-        for impassable_location in self.impassable_locations.iter() {
-            for (index, potential_location) in potential_locations.iter().enumerate() {
+            for impassable_location in self.impassable_locations.iter() {
                 if potential_location == impassable_location {
-                    indexes.push(index);
+                    keep = false;
                 }
             }
-        }
-
-        //for index in indexes.iter() {
-        //    potential_locations.remove(index);
-        //}
+            keep
+        });
 
         potential_locations
     }

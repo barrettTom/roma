@@ -1,6 +1,6 @@
 use std::cmp;
 
-pub struct Location{
+pub struct Location {
     pub x : i32, 
     pub y : i32
 }
@@ -24,20 +24,28 @@ impl cmp::PartialEq for Location {
 }
 
 impl Location {
-    pub fn up(mut self) -> Location {
-        self.y += 1;
-        self
+    pub fn up(self) -> Location {
+        Location{ x : self.x, y : self.y + 1 }
     }
-    pub fn down(mut self) -> Location {
-        self.y -= 1;
-        self
+    pub fn upleft(self) -> Location {
+        Location{ x : self.x - 1, y : self.y + 1 }
     }
-    pub fn right(mut self) -> Location {
-        self.x += 1;
-        self
+    pub fn upright(self) -> Location {
+        Location{ x : self.x + 1, y : self.y + 1 }
     }
-    pub fn left(mut self) -> Location {
-        self.x -= 1;
-        self
+    pub fn down(self) -> Location {
+        Location{ x : self.x, y : self.y - 1 }
+    }
+    pub fn downleft(self) -> Location {
+        Location{ x : self.x - 1, y : self.y - 1 }
+    }
+    pub fn downright(self) -> Location {
+        Location{ x : self.x + 1, y : self.y - 1 }
+    }
+    pub fn right(self) -> Location {
+        Location{ x : self.x + 1, y : self.y }
+    }
+    pub fn left(self) -> Location {
+        Location{ x : self.x - 1, y : self.y }
     }
 }

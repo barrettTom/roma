@@ -2,23 +2,23 @@ extern crate pancurses;
 
 use character::Character;
 
-pub struct View{
-	width: 		    i32,
-	height: 	    i32,
-    row:            i32,
-    col:            i32,
-	window:		    pancurses::Window,
+pub struct View {
+	width   : i32,
+	height  : i32,
+    row     : i32,
+    col     : i32,
+	window  : pancurses::Window,
 }
 
-impl View{
+impl View {
     pub fn new((x,y) : (i32, i32), map_window : &pancurses::Window) -> View {
         let window = map_window.derwin(x,y,0,0).expect("Cannot create derwin.");
-        View{
-            width : 	    x,
-            height : 	    y,
-            row :           0,
-            col :           0, 
-            window:		    window,
+        View {
+            width   : x,
+            height  : y,
+            row     : 0,
+            col     : 0, 
+            window  : window,
         }
     }
 
