@@ -23,10 +23,10 @@ impl Character {
         Character {
             symbol              : symbol,
             color               : color,
-            order               : Orders::Move as u8,
+            order               : Orders::Wander as u8,
             location            : location,
-            desired_location    : Some(Location(200,200)),
             needs_path          : false,
+            desired_location    : None,
             path                : None,
         }
     }
@@ -37,8 +37,30 @@ impl Character {
             self.wander(free_spaces);
         }
         else if self.order == Orders::Move as u8 {
-            self.move_toward_desired(free_spaces);
+            self.move_along_path(free_spaces);
         }
+    }
+
+    pub fn calculate_path(&mut self, impassable : Vec<(Location, usize)>) {
+        match self.desired_location {
+            None => self.order = Orders::Wander as u8,
+            Some(target) => {
+                let location = self.location;
+                let result = astar(&location,
+                                       |l| l.neighbours(impassable.clone()),
+                                       |l| l.distance(&target),
+                                       |l| *l == target);
+                let mut result = result.expect("No way to get to target.").0;
+                result.reverse();
+                result.pop();
+                self.path = Some(result);
+            }
+        }
+    }
+
+    pub fn give_destination(&mut self, destination : Location) {
+        self.desired_location = Some(destination);
+        self.order = Orders::Move as u8;
     }
 
     fn wander(&mut self, free_spaces : Vec<(Location, usize)>) {
@@ -46,7 +68,7 @@ impl Character {
         self.location = free_spaces[direction].0;
     }
 
-    fn move_toward_desired(&mut self, free_spaces : Vec<(Location, usize)>) {
+    fn move_along_path(&mut self, free_spaces : Vec<(Location, usize)>) {
         let mut moved = false;
         match self.path {
             None => self.needs_path = true,
@@ -69,23 +91,6 @@ impl Character {
         }
         if !moved {
             self.path = None;
-        }
-    }
-
-    pub fn calculate_path(&mut self, impassable : Vec<(Location, usize)>) {
-        match self.desired_location {
-            None => (),
-            Some(target) => {
-                let location = self.location;
-                let result = astar(&location,
-                                       |l| l.neighbours(impassable.clone()),
-                                       |l| l.distance(&target),
-                                       |l| *l == target);
-                let mut result = result.expect("zz").0;
-                result.reverse();
-                result.pop();
-                self.path = Some(result);
-            }
         }
     }
 }

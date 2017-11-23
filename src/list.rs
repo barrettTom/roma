@@ -34,6 +34,12 @@ impl List {
         }
     }
 
+    pub fn give_destination(&mut self, destination : Location) {
+        for i in 0..self.men.len() {
+            self.men[i].give_destination(destination)
+        }
+    }
+
     fn get_free_locations(&mut self, location : Location) -> Vec<(Location, usize)> {
         let mut potential_locations = location.neighbours(Vec::new());
 

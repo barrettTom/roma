@@ -41,18 +41,24 @@ fn main() {
     let mut list = List::new(map.impassable.to_vec());
 
     loop{
-        match main.getch() {
+        let order = match main.getch() {
             Some(Input::Character(c)) => {
                 match c {
-                    'h' => cursor.location.1 -= 1,
-                    'l' => cursor.location.1 += 1,
-                    'k' => cursor.location.0 -= 1,
-                    'j' => cursor.location.0 += 1,
+                    'h' => {cursor.location.1 -= 1; None}
+                    'l' => {cursor.location.1 += 1; None}
+                    'k' => {cursor.location.0 -= 1; None}
+                    'j' => {cursor.location.0 += 1; None}
                     'q' => break,
-                    _ => (),
+                    'o' => Some(cursor.location),
+                    _ => None,
                 }
             },
-            _ => ()
+            _ => None
+        };
+
+        match order {
+            None => (),
+            Some(location) => (list.give_destination(location)),
         }
 
         list.action();
