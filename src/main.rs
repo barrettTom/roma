@@ -36,7 +36,7 @@ fn main() {
     let mut map = Map::new();
     let mut view = View::new(main.get_max_yx(), &map.window);
 
-    let mut cursor = Character::new('X', Colors::White as u8, Location{ x : 150, y : 150});
+    let mut cursor = Character::new('X', Colors::White as u8, Location(150, 150));
 
     let mut list = List::new(map.impassable.to_vec());
 
@@ -44,10 +44,10 @@ fn main() {
         match main.getch() {
             Some(Input::Character(c)) => {
                 match c {
-                    'h' => cursor.location.y -= 1,
-                    'l' => cursor.location.y += 1,
-                    'k' => cursor.location.x -= 1,
-                    'j' => cursor.location.x += 1,
+                    'h' => cursor.location.1 -= 1,
+                    'l' => cursor.location.1 += 1,
+                    'k' => cursor.location.0 -= 1,
+                    'j' => cursor.location.0 += 1,
                     'q' => break,
                     _ => (),
                 }
@@ -64,7 +64,7 @@ fn main() {
         }
         map.draw(&cursor);
 
-        view.center(cursor, &map.window);
+        view.center(cursor.clone(), &map.window);
     }
 
 	endwin();

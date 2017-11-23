@@ -6,4 +6,4 @@ authors = ["Tom Barrett <tombarrett@siu.edu>"]
 [dependencies]
 pancurses = { git = "https://github.com/ihalila/pancurses" }
 rand = "0.3"
-
+pathfinding = { git = "https://github.com/samueltardieu/pathfinding" }

@@ -13,7 +13,7 @@ impl List {
     pub fn new(impassable_locations : Vec<Location>) -> List {
         let mut men = Vec::new();
         for i in 0..3 {
-            men.push(Character::new('@', Colors::BlueUnit as u8, Location{ x : 150, y : 150+i }));
+            men.push(Character::new('@', Colors::BlueUnit as u8, Location(150,150+i)));
         }
         List {
             men                     : men,
@@ -26,21 +26,26 @@ impl List {
             let location = self.men[i].location.clone();
             let free_locations = self.get_free_locations(location);
             self.men[i].action(free_locations);
+
+            if self.men[i].needs_path {
+                let impassable = self.get_all_impassable();
+                self.men[i].calculate_path(impassable);
+            }
         }
     }
 
-    fn get_free_locations(&mut self, location : Location) -> Vec<Location> {
-        let mut potential_locations = location.get_around();
+    fn get_free_locations(&mut self, location : Location) -> Vec<(Location, usize)> {
+        let mut potential_locations = location.neighbours(Vec::new());
 
         potential_locations.retain(|potential_location| {
             let mut keep = true;
             for man in self.men.iter() {
-                if potential_location == &man.location {
+                if potential_location.0 == man.location {
                     keep = false;
                 }
             }
             for impassable_location in self.impassable_locations.iter() {
-                if potential_location == impassable_location {
+                if potential_location.0 == *impassable_location {
                     keep = false;
                 }
             }
@@ -48,5 +53,16 @@ impl List {
         });
 
         potential_locations
+    }
+
+    fn get_all_impassable(&mut self) -> Vec<(Location, usize)> {
+        let mut impassable = Vec::new();
+        for man in self.men.iter() {
+            impassable.push((man.location, 1));
+        }
+        for impassable_location in self.impassable_locations.iter() {
+            impassable.push((*impassable_location,1));
+        }
+        impassable
     }
 }

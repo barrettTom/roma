@@ -34,20 +34,20 @@ impl Map {
         for (i, row) in map_data.iter().enumerate() {
             for (j, index) in row.chars().enumerate() {
                 match index {
-                    '0' | 'O' => impassable.push(Location{ x : i as i32, y : j as i32 }),
+                    '0' | 'O' => impassable.push(Location(i as i32, j as i32)),
                     _ => (),
                 }
             }
         }
 
         for y in 0..height {
-            impassable.push(Location{ x : 0 as i32, y : y as i32 });
-            impassable.push(Location{ x : width-1 as i32, y : y as i32} );
+            impassable.push(Location(0, y as i32));
+            impassable.push(Location(width-1 as i32, y as i32));
         }
 
         for x in 0..width {
-            impassable.push(Location{ x : x as i32, y : 0 as i32 });
-            impassable.push(Location{ x : x as i32, y : height-1 as i32 });
+            impassable.push(Location(x as i32, 0 as i32));
+            impassable.push(Location(x as i32, height-1));
         }
 
         Map {
@@ -61,7 +61,7 @@ impl Map {
 
     pub fn draw(&self, character : &Character) {
         self.window.attron(ColorPair(character.color));
-        self.window.mvaddch(character.location.x, character.location.y, character.symbol);
+        self.window.mvaddch(character.location.0, character.location.1, character.symbol);
     }
 
     pub fn fill(&mut self) {
