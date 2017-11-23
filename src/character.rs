@@ -33,7 +33,7 @@ impl Character {
 
     pub fn action(&mut self, free_spaces : Vec<(Location,usize)>) {
         if self.order == Orders::Wander as u8 {
-            self.needs_path == false;
+            self.needs_path = false;
             self.wander(free_spaces);
         }
         else if self.order == Orders::Move as u8 {
@@ -47,13 +47,20 @@ impl Character {
             Some(target) => {
                 let location = self.location;
                 let result = astar(&location,
-                                       |l| l.neighbours(impassable.clone()),
-                                       |l| l.distance(&target),
-                                       |l| *l == target);
-                let mut result = result.expect("No way to get to target.").0;
-                result.reverse();
-                result.pop();
-                self.path = Some(result);
+                                   |l| l.neighbours(impassable.clone()),
+                                   |l| l.distance(&target),
+                                   |l| *l == target);
+                self.path = match result {
+                    Some(mut result) => {
+                        result.0.reverse();
+                        result.0.pop();
+                        Some(result.0)
+                    }
+                    None => {
+                        self.order = Orders::Wander as u8;
+                        None
+                    }
+                };
             }
         }
     }
