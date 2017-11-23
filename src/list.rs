@@ -26,10 +26,12 @@ impl List {
             let location = self.men[i].location.clone();
             let free_locations = self.get_free_locations(location);
             self.men[i].action(free_locations);
+        }
 
+        let impassable = self.get_all_impassable();
+        for i in 0..self.men.len() {
             if self.men[i].needs_path {
-                let impassable = self.get_all_impassable();
-                self.men[i].calculate_path(impassable);
+                self.men[i].calculate_path(impassable.to_vec());
             }
         }
     }
