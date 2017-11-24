@@ -95,7 +95,7 @@ fn main() {
             }
         }
 
-        for man in list.men.iter() {
+        for man in list.get_men() {
             map.draw(man);
         }
 

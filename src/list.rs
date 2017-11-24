@@ -1,4 +1,5 @@
 use std::thread::{spawn, JoinHandle};
+use std::slice::Iter;
 
 extern crate pancurses;
 
@@ -10,7 +11,7 @@ use character::Character;
 use constants::Colors;
 
 pub struct List{
-    pub men                 : Vec<Character>,
+    men                     : Vec<Character>,
     impassable_locations    : Vec<Location>,
     threads                 : Vec<JoinHandle<(usize, Option<Vec<Location>>)>>
 }
@@ -94,6 +95,10 @@ impl List {
                 }
             }
         }
+    }
+
+    pub fn get_men(&self) -> Iter<Character> {
+        self.men.iter()
     }
 
     fn get_free_locations(&mut self, location : Location) -> Vec<(Location, usize)> {

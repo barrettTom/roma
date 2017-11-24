@@ -1,7 +1,6 @@
 extern crate rand;
 use character::rand::Rng;
 
-
 use constants::Orders;
 use location::Location;
 
@@ -70,15 +69,7 @@ impl Character {
     }
 
     pub fn give_path(&mut self, path : Option<Vec<Location>>) {
-        match path {
-            Some(path) => {
-                self.path = Some(path);
-            },
-            None => {
-                self.path = None;
-                self.order = Orders::Wander as u8;
-            },
-        }
+        self.path = path;
     }
 
     pub fn give_destination(&mut self, destination : Location) {
