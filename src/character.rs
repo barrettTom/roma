@@ -28,7 +28,6 @@ impl Character {
         }
     }
 
-
     pub fn action(&mut self, free_spaces : Vec<(Location,usize)>) {
         if self.order == Orders::Wander as u8 {
             self.wander(free_spaces);

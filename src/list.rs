@@ -1,3 +1,5 @@
+use std::thread::spawn;
+
 extern crate pancurses;
 
 extern crate pathfinding;
@@ -7,12 +9,14 @@ use location::Location;
 use character::Character;
 use constants::Colors;
 
+#[derive(Clone)]
 pub struct List{
     pub men                 : Vec<Character>,
     impassable_locations    : Vec<Location>,
 }
 
 impl List {
+
     pub fn new(impassable_locations : Vec<Location>) -> List {
         let mut men = Vec::new();
         for i in 0..10 {
@@ -31,37 +35,27 @@ impl List {
             self.men[i].action(free_locations);
         }
 
+        let mut threads = vec!();
         let impassable = self.get_all_impassable();
         for i in 0..self.men.len() {
             if self.men[i].needs_path() {
                 let man = self.men[i].clone();
-                let path = self.calculate_path(man, impassable.clone());
-                self.men[i].give_path(path);
+                let impassable_clone = impassable.clone();
+                threads.push(spawn(move || {
+                    (i, calculate_path(man, impassable_clone))
+                }));
+            }
+        }
+
+        for thread in threads {
+            let data = thread.join();
+            match data {
+                Ok(data) => self.men[data.0].give_path(data.1),
+                _ => (),
             }
         }
     }
 
-    fn calculate_path(&mut self, man : Character, impassable : Vec<(Location, usize)>) -> Option<Vec<Location>> {
-        let desired_location = man.get_desired_location();
-        match desired_location {
-            Some(target) => {
-                let location = man.get_location();
-                let result = astar(&location,
-                                   |l| l.neighbours(impassable.clone()),
-                                   |l| l.distance(&target),
-                                   |l| *l == target);
-                match result {
-                    Some(mut result) => {
-                        result.0.reverse();
-                        result.0.pop();
-                        Some(result.0)
-                    }
-                    None => None,
-                }
-            }
-            None => None,
-        }
-    }
 
     pub fn give_destination(&mut self, destination : Location) {
         for i in 0..self.men.len() {
@@ -135,5 +129,27 @@ impl List {
             impassable.push((*impassable_location,1));
         }
         impassable
+    }
+}
+
+fn calculate_path(man : Character, impassable : Vec<(Location, usize)>) -> Option<Vec<Location>> {
+    let desired_location = man.get_desired_location();
+    match desired_location {
+        Some(target) => {
+            let location = man.get_location();
+            let result = astar(&location,
+                               |l| l.neighbours(impassable.clone()),
+                               |l| l.distance(&target),
+                               |l| *l == target);
+            match result {
+                Some(mut result) => {
+                    result.0.reverse();
+                    result.0.pop();
+                    Some(result.0)
+                }
+                None => None,
+            }
+        }
+        None => None,
     }
 }

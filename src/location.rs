@@ -2,6 +2,7 @@
 pub struct Location(pub i32, pub i32);
 
 impl Location {
+
     pub fn distance(&self, other: &Location) -> usize {
         (((self.0 - other.0).pow(2) + (self.1 - other.1).pow(2)) as f64).sqrt() as usize
     }
