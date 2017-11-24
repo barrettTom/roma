@@ -60,8 +60,9 @@ impl Map {
     }
 
     pub fn draw(&self, character : &Character) {
-        self.window.attron(ColorPair(character.color));
-        self.window.mvaddch(character.location.0, character.location.1, character.symbol);
+        self.window.attron(ColorPair(character.get_color()));
+        let location = character.get_location();
+        self.window.mvaddch(location.0, location.1, character.get_symbol());
     }
 
     pub fn draw_box(&self, first_location : Location, second_location : Location) {

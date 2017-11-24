@@ -47,10 +47,10 @@ fn main() {
         let command = match main.getch() {
             Some(Input::Character(ch)) => {
                 match ch {
-                    'h' => {cursor.location.1 -= 1; None}
-                    'l' => {cursor.location.1 += 1; None}
-                    'k' => {cursor.location.0 -= 1; None}
-                    'j' => {cursor.location.0 += 1; None}
+                    'k' => {cursor.up();   None}
+                    'j' => {cursor.down(); None}
+                    'h' => {cursor.left(); None}
+                    'l' => {cursor.right();None}
                     'q' => break,
                     'o' => Some(Commands::Go),
                     's' => Some(Commands::Grid),
@@ -65,17 +65,17 @@ fn main() {
         map.fill();
 
         match command {
-            Some(Commands::Go) => list.give_destination(cursor.location),
+            Some(Commands::Go) => list.give_destination(cursor.get_location()),
             Some(Commands::Grid) => {
                 paused = true;
                 draw_box = true;
-                first_location = Some(cursor.location);
+                first_location = Some(cursor.get_location());
             },
             Some(Commands::Finish) => {
                 paused = false;
                 draw_box = false;
                 match first_location {
-                    Some(first_location) => list.give_grid(first_location, cursor.location),
+                    Some(first_location) => list.give_grid(first_location, cursor.get_location()),
                     None => (),
                 }
             },
@@ -90,7 +90,7 @@ fn main() {
 
         if draw_box {
             match first_location {
-                Some(first_location) => map.draw_box(first_location, cursor.location),
+                Some(first_location) => map.draw_box(first_location, cursor.get_location()),
                 None => (),
             }
         }

@@ -1,5 +1,8 @@
 extern crate pancurses;
 
+extern crate pathfinding;
+use self::pathfinding::astar;
+
 use location::Location;
 use character::Character;
 use constants::Colors;
@@ -23,16 +26,40 @@ impl List {
 
     pub fn action(&mut self) {
         for i in 0..self.men.len() {
-            let location = self.men[i].location.clone();
+            let location = self.men[i].get_location();
             let free_locations = self.get_free_locations(location);
             self.men[i].action(free_locations);
         }
 
         let impassable = self.get_all_impassable();
         for i in 0..self.men.len() {
-            if self.men[i].needs_path {
-                self.men[i].calculate_path(impassable.to_vec());
+            if self.men[i].needs_path() {
+                let man = self.men[i].clone();
+                let path = self.calculate_path(man, impassable.clone());
+                self.men[i].give_path(path);
             }
+        }
+    }
+
+    fn calculate_path(&mut self, man : Character, impassable : Vec<(Location, usize)>) -> Option<Vec<Location>> {
+        let desired_location = man.get_desired_location();
+        match desired_location {
+            Some(target) => {
+                let location = man.get_location();
+                let result = astar(&location,
+                                   |l| l.neighbours(impassable.clone()),
+                                   |l| l.distance(&target),
+                                   |l| *l == target);
+                match result {
+                    Some(mut result) => {
+                        result.0.reverse();
+                        result.0.pop();
+                        Some(result.0)
+                    }
+                    None => None,
+                }
+            }
+            None => None,
         }
     }
 
@@ -84,7 +111,7 @@ impl List {
         potential_locations.retain(|potential_location| {
             let mut keep = true;
             for man in self.men.iter() {
-                if potential_location.0 == man.location {
+                if potential_location.0 == man.get_location() {
                     keep = false;
                 }
             }
@@ -102,7 +129,7 @@ impl List {
     fn get_all_impassable(&mut self) -> Vec<(Location, usize)> {
         let mut impassable = Vec::new();
         for man in self.men.iter() {
-            impassable.push((man.location, 1));
+            impassable.push((man.get_location(), 1));
         }
         for impassable_location in self.impassable_locations.iter() {
             impassable.push((*impassable_location,1));

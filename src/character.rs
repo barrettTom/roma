@@ -1,39 +1,36 @@
 extern crate rand;
 use character::rand::Rng;
 
-extern crate pathfinding;
-use self::pathfinding::astar;
 
 use constants::Orders;
 use location::Location;
 
 #[derive(Clone)]
 pub struct Character {
-    pub symbol          : char,
-    pub color           : u8,
-    pub order           : u8,
-    pub location        : Location,
-    pub needs_path      : bool,
+    symbol              : char,
+    color               : u8,
+    order               : u8,
+    location            : Location,
     desired_location    : Option<Location>,
     path                : Option<Vec<Location>>,
 }
 
 impl Character {
+
     pub fn new(symbol : char, color : u8, location : Location) -> Character {
         Character {
             symbol              : symbol,
             color               : color,
             order               : Orders::Wander as u8,
             location            : location,
-            needs_path          : false,
             desired_location    : None,
             path                : None,
         }
     }
 
+
     pub fn action(&mut self, free_spaces : Vec<(Location,usize)>) {
         if self.order == Orders::Wander as u8 {
-            self.needs_path = false;
             self.wander(free_spaces);
         }
         else if self.order == Orders::Move as u8 {
@@ -41,33 +38,68 @@ impl Character {
         }
     }
 
-    pub fn calculate_path(&mut self, impassable : Vec<(Location, usize)>) {
-        match self.desired_location {
-            None => self.order = Orders::Wander as u8,
-            Some(target) => {
-                let location = self.location;
-                let result = astar(&location,
-                                   |l| l.neighbours(impassable.clone()),
-                                   |l| l.distance(&target),
-                                   |l| *l == target);
-                self.path = match result {
-                    Some(mut result) => {
-                        result.0.reverse();
-                        result.0.pop();
-                        Some(result.0)
-                    }
-                    None => {
-                        self.order = Orders::Wander as u8;
-                        None
-                    }
-                };
-            }
+    pub fn up(&mut self) {
+        self.location.0 -= 1;
+    }
+
+    pub fn down(&mut self) {
+        self.location.0 += 1;
+    }
+
+    pub fn right(&mut self) {
+        self.location.1 += 1;
+    }
+
+    pub fn left(&mut self) {
+        self.location.1 -= 1;
+    }
+
+    pub fn get_symbol(&self) -> char {
+        self.symbol
+    }
+
+    pub fn get_color(&self) -> u8 {
+        self.color
+    }
+
+    pub fn get_location(&self) -> Location {
+        self.location
+    }
+
+    pub fn get_desired_location(&self) -> Option<Location> {
+        self.desired_location
+    }
+
+    pub fn give_path(&mut self, path : Option<Vec<Location>>) {
+        match path {
+            Some(path) => {
+                self.path = Some(path);
+            },
+            None => {
+                self.path = None;
+                self.order = Orders::Wander as u8;
+            },
         }
     }
 
     pub fn give_destination(&mut self, destination : Location) {
         self.desired_location = Some(destination);
         self.order = Orders::Move as u8;
+    }
+
+    pub fn needs_path(&self) -> bool {
+        if self.order == Orders::Wander as u8 {
+            false
+        }
+        else if self.path.is_some() {
+            false
+        }
+        else if self.desired_location.is_some() && self.path.is_none() {
+            true
+        }
+        else {
+            false
+        }
     }
 
     fn wander(&mut self, free_spaces : Vec<(Location, usize)>) {
@@ -78,9 +110,8 @@ impl Character {
     fn move_along_path(&mut self, free_spaces : Vec<(Location, usize)>) {
         let mut moved = false;
         match self.path {
-            None => self.needs_path = true,
+            None => (),
             Some(ref mut calculated_path) => {
-                self.needs_path = false;
                 if calculated_path.len() > 0 {
                     let next_location = calculated_path.pop().unwrap();
                     for free_space in free_spaces {
