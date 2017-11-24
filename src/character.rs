@@ -92,7 +92,7 @@ impl Character {
                 }
                 else {
                     self.desired_location = None;
-                    self.order = Orders::Wander as u8;
+                    self.order = Orders::Wait as u8;
                 }
             }
         }

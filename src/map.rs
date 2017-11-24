@@ -64,6 +64,33 @@ impl Map {
         self.window.mvaddch(character.location.0, character.location.1, character.symbol);
     }
 
+    pub fn draw_box(&self, first_location : Location, second_location : Location) {
+        for i in first_location.0..second_location.0 + 1 {
+            for j in first_location.1..second_location.1 + 1 {
+                self.window.attron(ColorPair(Colors::White as u8));
+                self.window.mvaddch(i as i32, j as i32, 'X');
+            }
+        }
+        for i in second_location.0..first_location.0 {
+            for j in second_location.1..first_location.1 {
+                self.window.attron(ColorPair(Colors::White as u8));
+                self.window.mvaddch(i as i32, j as i32, 'X');
+            }
+        }
+        for i in first_location.0..second_location.0 + 1 {
+            for j in second_location.1..first_location.1 {
+                self.window.attron(ColorPair(Colors::White as u8));
+                self.window.mvaddch(i as i32, j as i32, 'X');
+            }
+        }
+        for i in second_location.0..first_location.0 {
+            for j in first_location.1..second_location.1 + 1 {
+                self.window.attron(ColorPair(Colors::White as u8));
+                self.window.mvaddch(i as i32, j as i32, 'X');
+            }
+        }
+    }
+
     pub fn fill(&mut self) {
         for (i, row) in self.map_data.iter().enumerate() {
             for (j, index) in row.chars().enumerate() {

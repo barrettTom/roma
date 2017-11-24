@@ -1,4 +1,4 @@
-#[allow(dead_code)]
+#![allow(dead_code)]
 
 pub enum Colors {
     None,
@@ -12,4 +12,10 @@ pub enum Orders {
     Wait,
     Move,
     Wander,
+}
+
+pub enum Commands {
+    Go,
+    Grid,
+    Finish,
 }

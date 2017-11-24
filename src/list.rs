@@ -12,7 +12,7 @@ pub struct List{
 impl List {
     pub fn new(impassable_locations : Vec<Location>) -> List {
         let mut men = Vec::new();
-        for i in 0..3 {
+        for i in 0..10 {
             men.push(Character::new('@', Colors::BlueUnit as u8, Location(150,150+i)));
         }
         List {
@@ -39,6 +39,42 @@ impl List {
     pub fn give_destination(&mut self, destination : Location) {
         for i in 0..self.men.len() {
             self.men[i].give_destination(destination)
+        }
+    }
+
+    pub fn give_grid(&mut self, first_location : Location, second_location : Location) {
+        let mut index = 0;
+        for i in first_location.0..second_location.0 + 1 {
+            for j in first_location.1..second_location.1 + 1 {
+                if index < self.men.len() {
+                    self.men[index].give_destination(Location(i,j));
+                    index += 1;
+                }
+            }
+        }
+        for i in second_location.0..first_location.0 {
+            for j in second_location.1..first_location.1 {
+                if index < self.men.len() {
+                    self.men[index].give_destination(Location(i,j));
+                    index += 1;
+                }
+            }
+        }
+        for i in first_location.0..second_location.0 + 1 {
+            for j in second_location.1..first_location.1 {
+                if index < self.men.len() {
+                    self.men[index].give_destination(Location(i,j));
+                    index += 1;
+                }
+            }
+        }
+        for i in second_location.0..first_location.0 {
+            for j in first_location.1..second_location.1 + 1 {
+                if index < self.men.len() {
+                    self.men[index].give_destination(Location(i,j));
+                    index += 1;
+                }
+            }
         }
     }
 

@@ -13,7 +13,7 @@ use view::View;
 use list::List;
 use location::Location;
 use character::Character;
-use constants::Colors;
+use constants::{Colors, Commands};
 
 fn init() -> pancurses::Window {
     let main = initscr();
@@ -40,35 +40,64 @@ fn main() {
 
     let mut list = List::new(map.impassable.to_vec());
 
+    let mut paused = false;
+    let mut first_location = None;
+    let mut draw_box = false;
     loop{
-        let order = match main.getch() {
-            Some(Input::Character(c)) => {
-                match c {
+        let command = match main.getch() {
+            Some(Input::Character(ch)) => {
+                match ch {
                     'h' => {cursor.location.1 -= 1; None}
                     'l' => {cursor.location.1 += 1; None}
                     'k' => {cursor.location.0 -= 1; None}
                     'j' => {cursor.location.0 += 1; None}
                     'q' => break,
-                    'o' => Some(cursor.location),
+                    'o' => Some(Commands::Go),
+                    's' => Some(Commands::Grid),
+                   '\n' => Some(Commands::Finish),
                     _ => None,
                 }
             },
-            _ => None
+            Some(Input::KeyEnter) => Some(Commands::Finish),
+            _ => None,
         };
 
-        match order {
+        map.fill();
+
+        match command {
+            Some(Commands::Go) => list.give_destination(cursor.location),
+            Some(Commands::Grid) => {
+                paused = true;
+                draw_box = true;
+                first_location = Some(cursor.location);
+            },
+            Some(Commands::Finish) => {
+                paused = false;
+                draw_box = false;
+                match first_location {
+                    Some(first_location) => list.give_grid(first_location, cursor.location),
+                    None => (),
+                }
+            },
             None => (),
-            Some(location) => (list.give_destination(location)),
         }
 
-        list.action();
+        if !paused {
+            list.action();
+        }
 
-        map.fill();
+        map.draw(&cursor);
+
+        if draw_box {
+            match first_location {
+                Some(first_location) => map.draw_box(first_location, cursor.location),
+                None => (),
+            }
+        }
 
         for man in list.men.iter() {
             map.draw(man);
         }
-        map.draw(&cursor);
 
         view.center(cursor.clone(), &map.window);
     }
