@@ -1,4 +1,4 @@
-use std::thread::spawn;
+use std::thread::{spawn, JoinHandle};
 
 extern crate pancurses;
 
@@ -9,10 +9,10 @@ use location::Location;
 use character::Character;
 use constants::Colors;
 
-#[derive(Clone)]
 pub struct List{
     pub men                 : Vec<Character>,
     impassable_locations    : Vec<Location>,
+    threads                 : Vec<JoinHandle<(usize, Option<Vec<Location>>)>>
 }
 
 impl List {
@@ -25,6 +25,7 @@ impl List {
         List {
             men                     : men,
             impassable_locations    : impassable_locations,
+            threads                 : Vec::new(),
         }
     }
 
@@ -35,27 +36,23 @@ impl List {
             self.men[i].action(free_locations);
         }
 
-        let mut threads = vec!();
+        while !self.threads.is_empty() {
+            let thread = self.threads.pop().unwrap();
+            let (i, path) = thread.join().unwrap();
+            self.men[i].give_path(path);
+        }
+
         let impassable = self.get_all_impassable();
         for i in 0..self.men.len() {
             if self.men[i].needs_path() {
                 let man = self.men[i].clone();
                 let impassable_clone = impassable.clone();
-                threads.push(spawn(move || {
+                self.threads.push(spawn(move || {
                     (i, calculate_path(man, impassable_clone))
                 }));
             }
         }
-
-        for thread in threads {
-            let data = thread.join();
-            match data {
-                Ok(data) => self.men[data.0].give_path(data.1),
-                _ => (),
-            }
-        }
     }
-
 
     pub fn give_destination(&mut self, destination : Location) {
         for i in 0..self.men.len() {
@@ -147,9 +144,9 @@ fn calculate_path(man : Character, impassable : Vec<(Location, usize)>) -> Optio
                     result.0.pop();
                     Some(result.0)
                 }
-                None => None,
+                _ => None,
             }
         }
-        None => None,
+        _ => None,
     }
 }

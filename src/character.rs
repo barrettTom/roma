@@ -109,7 +109,6 @@ impl Character {
     fn move_along_path(&mut self, free_spaces : Vec<(Location, usize)>) {
         let mut moved = false;
         match self.path {
-            None => (),
             Some(ref mut calculated_path) => {
                 if calculated_path.len() > 0 {
                     let next_location = calculated_path.pop().unwrap();
@@ -125,6 +124,7 @@ impl Character {
                     self.order = Orders::Wait as u8;
                 }
             }
+            _ => (),
         }
         if !moved {
             self.path = None;

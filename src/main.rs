@@ -79,7 +79,7 @@ fn main() {
                     None => (),
                 }
             },
-            None => (),
+            _ => (),
         }
 
         if !paused {
@@ -91,7 +91,7 @@ fn main() {
         if draw_box {
             match first_location {
                 Some(first_location) => map.draw_box(first_location, cursor.get_location()),
-                None => (),
+                _ => (),
             }
         }
 
