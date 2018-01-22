@@ -20,7 +20,7 @@ impl List {
 
     pub fn new(impassable_locations : Vec<Location>) -> List {
         let mut men = Vec::new();
-        for i in 0..10 {
+        for i in 0..100 {
             men.push(Character::new('@', Colors::BlueUnit as u8, Location(150,150+i)));
         }
         List {
@@ -48,9 +48,9 @@ impl List {
             if self.men[i].needs_path() {
                 let man = self.men[i].clone();
                 let impassable_clone = impassable.clone();
-                self.threads.push(spawn(move || {
+                self.threads.push(spawn(move ||
                     (i, calculate_path(man, impassable_clone))
-                }));
+                ));
             }
         }
     }
@@ -106,11 +106,11 @@ impl List {
 
         potential_locations.retain(|potential_location| {
             let mut keep = true;
-            for man in self.men.iter() {
+            /*for man in self.men.iter() {
                 if potential_location.0 == man.get_location() {
                     keep = false;
                 }
-            }
+            }*/
             for impassable_location in self.impassable_locations.iter() {
                 if potential_location.0 == *impassable_location {
                     keep = false;
@@ -124,9 +124,9 @@ impl List {
 
     fn get_all_impassable(&mut self) -> Vec<(Location, usize)> {
         let mut impassable = Vec::new();
-        for man in self.men.iter() {
+        /*for man in self.men.iter() {
             impassable.push((man.get_location(), 1));
-        }
+        }*/
         for impassable_location in self.impassable_locations.iter() {
             impassable.push((*impassable_location,1));
         }
